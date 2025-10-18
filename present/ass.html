@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Advanced Music Player</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="ass.css">
+  <style>
+    
+    body { background: #f0f8ff; font-family: sans-serif; }
+    .player { max-width: 600px; margin: 50px auto; padding: 20px; background: #fff; border-radius: 15px; box-shadow: 0 0 10px #ccc; }
+    .track-title { font-weight: bold; margin: 10px 0; text-align: center; }
+    .playlist-item { display: flex; justify-content: space-between; margin: 5px 0; padding: 5px 10px; background: #eee; border-radius: 8px; }
+    .fav-btn { border: none; background: none; cursor: pointer; font-size: 1.2rem; }
+    .carousel-item img { height: 250px; object-fit: cover; border-radius: 12px; }
+    #currentCover { max-height: 200px; display: block; margin: 0 auto 15px; border-radius: 12px; }
+  </style>
+</head>
+<body>
+  <img id="currentCover" src="" class="img-fluid rounded mb-3">
+
+  <div class="player">
+    <h3 class="text-center">🎵 Music Player</h3>
+
+   
+    <ul class="nav nav-tabs mb-3" id="musicTabs" role="tablist">
+      <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#album">Album</button></li>
+      <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#playlist">Playlist</button></li>
+      <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#favorites">Favorites</button></li>
+      <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#artist">Artist</button></li>
+    </ul>
+
+    <div class="tab-content">
+    
+      <div class="tab-pane fade show active" id="album">
+        <div id="coverCarousel" class="carousel slide mb-3" data-bs-ride="carousel">
+          <div class="carousel-inner" id="carouselInner"></div>
+        </div>
+        <p class="track-title" id="trackTitle">No track playing</p>
+        <audio id="audioPlayer" controls class="w-100 mb-3"></audio>
+      </div>
+
+   
+      <div class="tab-pane fade" id="playlist">
+        <div id="playlistContent"></div>
+      </div>
+
+      <div class="tab-pane fade" id="favorites">
+        <div id="favoritesContent"></div>
+      </div>
+
+      <div class="tab-pane fade" id="artist">
+        <p class="text-center">🎤 Artists: Arijit Singh, Aimer, Abdi</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const tracks = [
+      {
+        title: "Jo Tum Mere Ho",
+        artist: "Arijit Singh",
+        src: "jo tum.mp3",
+        cover: "jo tum.jpg",
+        favorite: false
+      },
+      {
+        title: "Nesamaguren",
+        artist: "Aimer",
+        src: "Nesamaguren.mp3",
+        cover: "nesa.jpg",
+        favorite: false
+      },
+      {
+        title: "Abdi Abdi",
+        artist: "Abdi",
+        src: "abdi.mp3",
+        cover: "abdi.jpg",
+        favorite: false
+      }
+    ];
+
+    const audio = document.getElementById("audioPlayer");
+    const title = document.getElementById("trackTitle");
+    const playlist = document.getElementById("playlistContent");
+    const favorites = document.getElementById("favoritesContent");
+    const carousel = document.getElementById("carouselInner");
+    const currentCover = document.getElementById("currentCover");
+
+    function playTrack(i) {
+      audio.src = tracks[i].src;
+      audio.play();
+      title.textContent = `${tracks[i].title} — ${tracks[i].artist}`;
+      currentCover.src = tracks[i].cover;
+
+      [...carousel.children].forEach((item, idx) => {
+        item.classList.toggle("active", idx === i);
+      });
+    }
+
+    function toggleFavorite(i) {
+      tracks[i].favorite = !tracks[i].favorite;
+      renderPlaylist();
+      renderFavorites();
+    }
+
+    function renderCarousel() {
+      carousel.innerHTML = "";
+      tracks.forEach((track, i) => {
+        const item = document.createElement("div");
+        item.className = "carousel-item" + (i === 0 ? " active" : "");
+        item.innerHTML = `<img src="${track.cover}" class="d-block w-100" alt="${track.title}" onclick="playTrack(${i})">`;
+        carousel.appendChild(item);
+      });
+    }
+
+    function renderPlaylist() {
+      playlist.innerHTML = "";
+      tracks.forEach((track, i) => {
+        const item = document.createElement("div");
+        item.className = "playlist-item";
+        item.innerHTML = `<span onclick="playTrack(${i})" style="cursor:pointer;">
+                            ${track.title} — ${track.artist}
+                          </span>
+                          <button class="fav-btn" onclick="toggleFavorite(${i})">
+                            ${track.favorite ? "❤️" : "🤍"}
+                          </button>`;
+        playlist.appendChild(item);
+      });
+    }
+
+    function renderFavorites() {
+      favorites.innerHTML = "";
+      tracks.forEach((track, i) => {
+        if (track.favorite) {
+          const item = document.createElement("div");
+          item.className = "playlist-item";
+          item.innerHTML = `<span onclick="playTrack(${i})" style="cursor:pointer;">
+                              ${track.title} — ${track.artist}
+                            </span>
+                            <button class="fav-btn" onclick="toggleFavorite(${i})">❤️</button>`;
+          favorites.appendChild(item);
+        }
+      });
+    }
+
+    renderCarousel();
+    renderPlaylist();
+    renderFavorites();
+  </script>
+  <script src="ass.jss"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
